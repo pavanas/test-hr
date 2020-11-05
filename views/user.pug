@@ -1,0 +1,16 @@
+html
+  include head.pug
+  body
+    div(class="main")
+        h2 Welcome 
+            span= user.name
+        div
+            if message
+                div= message
+            form(action="http://localhost:5000/users/"+user.username, method="post")
+                label(for="newName") Change your current name:
+                    input(type="text" name="newName")
+                div
+                    button(type="submit") Change
+            div
+                a(href="http://localhost:5000/users/"+user.username+"/list") show previous names list

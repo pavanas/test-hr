@@ -1,0 +1,13 @@
+html
+  include head.pug
+  body
+    div(class="main") 
+        h4 Login 
+        form(action="/", method="post")
+            label(for="username") Username:
+                input(type="text" name="username")
+            div
+                button(type="submit") Login
+        div
+            a(href="http://localhost:5000/list") show list
+    
