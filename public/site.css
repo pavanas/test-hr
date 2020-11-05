@@ -1,4 +1,7 @@
 .main {
+    width: 600px;
     text-align: center;
     margin: 0 auto;
+    padding: 40px 10px;
+    border: 1px solid sandybrown;
 }

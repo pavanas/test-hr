@@ -1,9 +1,10 @@
 import express from "express";
-import usersData from "./data.json"
-import moment from "moment"
-import MongoClient from "mongodb"
+import usersData from "./data.json";
+import moment from "moment";
+import MongoClient from "mongodb";
+import path from "path";
 
-const mongoURL = 'mongodb://mongo:27017/dev'
+const mongoURL = 'mongodb://localhost:27017/hrtest';
 
 const app = express();
 
@@ -19,6 +20,7 @@ const middleware = ((req, res, next) => {
 // init MongoDB
 const initMongo = (async () => {
     console.log('Starting MongoDB...');
+    let client;
     try {
         client = await MongoClient.connect(mongoURL, {
             useNewUrlParser: true,
@@ -53,8 +55,8 @@ const init = (async () => {
     
     app.get("/list", async (req, res) => {
         const nearlyExpiredNames = [];
-        const currDate = moment()
-        // Call mongo
+        const currDate = moment();
+
         const users = await getUsers(db);
         users.forEach((user) => {
             // We add a year on the last updated date and we compare
@@ -73,9 +75,7 @@ const init = (async () => {
     
     app.post("/", async (req, res) => {
         // check to see if user exists
-        // Call mongo
         const user = await getUserByUsername(db, req.body.username); 
-        // const user = users.find((user) => user.username === req.body.username);
         if (user) {
             res.redirect(`/users/${user.username}`);
         } else {
@@ -85,9 +85,7 @@ const init = (async () => {
     
     app.get("/users/:username", middleware, async (req, res) => {
         //find name from username
-        // Call mongo
         const user = await getUserByUsername(db, req.params.username);
-        // const user = users.find((user) => user.username === req.params.id);
         if (user) {
             res.render("user", { 
                 siteTitle: "Test",
@@ -100,9 +98,7 @@ const init = (async () => {
     
     
     app.post("/users/:username", middleware, async (req, res) => {
-        // Call mongo
-        // const user = users.find((user) => user.username === req.params.username);
-        const user = await getUserByUsername(db, req.body.username);
+        const user = await getUserByUsername(db, req.params.username);
         const newName = req.body.newName;
         const previousNameSet = new Set(user.previousNames);
 
@@ -114,23 +110,18 @@ const init = (async () => {
             });
         } else {
             //update the name and add new name to previous names array
-            //user.previousNames.push(user.name);
-            //user.name = newName;
-            //user.nameUpdated = moment().format();
             await updateUserData(db, user.username, [...user.previousNames, user.name], newName, moment().format());
+            const newUser = await getUserByUsername(db, user.username);
             res.render("user", { 
                 siteTitle: "Test",
-                user, 
+                user: newUser, 
                 message: "Name has been updated correctly!" 
             });
         }
-    
     });
     
     app.get("/users/:username/list", middleware, async (req, res) => {
-        // Call mongo
-        const user = await getUserByUsername(db, req.body.username);
-        // const user = users.find((user) => user.username === req.params.id);
+        const user = await getUserByUsername(db, req.params.username);
         res.render("list", { 
             siteTitle: "Test",
             title: "Previously used names!",
@@ -152,7 +143,7 @@ async function getUsers(db) {
 }
 
 async function getUserByUsername(db, username) {
-    return await db.find({ username: username });
+    return await db.findOne({ username: username });
 }
 
 async function updateUserData(db, username ,prevNames, newName, updateDate) {
