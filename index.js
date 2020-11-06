@@ -4,7 +4,8 @@ import moment from "moment";
 import MongoClient from "mongodb";
 import path from "path";
 
-const mongoURL = 'mongodb://localhost:27017/hrtest';
+console.log(process.env.MONGO_URL);
+const mongoURL = process.env.MONGO_URL || 'mongodb://localhost:27017/hrtest';
 
 const app = express();
 

@@ -1,3 +1,9 @@
-head
-    title= siteTitle
-    link(rel="stylesheet", href="site.css")
+block variables
+doctype html
+html
+    head
+        title= siteTitle
+        link(rel="stylesheet", href="site.css" type="text/css")
+    body
+        div(class="main")
+            block content

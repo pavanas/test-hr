@@ -38,3 +38,13 @@ using pug templating and not separating the routes on their own directory(in cas
 As we discussed previously another framework or DB solution could be used as well with the necessary adjustments. To be honest I would ask my teammates to see with what technologies they are more comfortable to work with and base part of my final decision on that as well. :)
 
 
+# Running with Docker
+ 
+ Use the following commands for running the app using Docker:
+ - Create a local network:
+   **docker network create hrtest**
+ - Run mongo:
+   **docker run --name=mongo --rm --network=hrtest mongo**
+ - Run hrtest app:
+   **docker run --name=hrtest --rm --network=hrtest -p 5000:5000 -e MONGO_URL=mongodb://mongo:27017/hrtest pavanas/hrtest:1.0.0**
+   
